@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+   /******************************************************************************
+     Copyright:: 2020- IBM, Inc
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+  *****************************************************************************/
+-->
+
+<html lang="en-US">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>For a 'combobox', 'aria-haspopup' must match the role of the combobox pop-up.</title>
+</head>
+
+<body>
+    <div id="userDropdown" dropdown="" keyboard-nav="" dropdown-toggle="" role="button" aria-labelledby="userDropdownName" class="dropdown-toggle dropdown open" aria-haspopup="true" aria-expanded="true" >
+        <ul class="dropdown-menu" aria-labelledby="userDropdownName" role="menu">
+          <li id="user_preference" ng-click="openUserPreferenceDialog()" role="menuitem">
+            <a href="#" translate="USER_PROFILE" class="ng-scope">User profile</a>
+          </li>
+          <li id="user_password" ng-click="openPasswordDialog()" role="menuitem" ng-if="user.saasAuthenticationPolicy != 'SAML2'" class="ng-scope">
+            <a href="#" translate="CHANGE_PASSWORD" class="ng-scope">Change password</a>
+          </li>
+          <li id="user_logout" ng-click="logout()" role="menuitem">
+            <a href="#" translate="LOGOUT" class="ng-scope">Log out</a>
+          </li>
+        </ul>
+    </div>
+    <script>
+        UnitTest = {
+            ruleIds: ["combobox_haspopup"],
+            results: [{
+            "ruleId": "combobox_haspopup",
+            "value": [
+              "INFORMATION",
+              "PASS"
+            ],
+            "path": {
+              "dom": "/html[1]/body[1]/main[1]/div[1]/input[1]",
+              "aria": "/document[1]/main[1]/combobox[1]"
+            },
+            "reasonId": "Pass",
+            "message": "The 'aria-controls' (ARIA 1.2) or 'aria-owns' (ARIA 1.0) appropriately references a valid popup 'id' value",
+            "messageArgs": [],
+            "apiArgs": [],
+            "category": "Accessibility"
+          },
+          {
+            "ruleId": "combobox_haspopup",
+            "value": [
+              "INFORMATION",
+              "PASS"
+            ],
+            "path": {
+              "dom": "/html[1]/body[1]/main[1]/div[2]/input[1]",
+              "aria": "/document[1]/main[1]/combobox[2]"
+            },
+            "reasonId": "Pass",
+            "message": "The 'aria-controls' (ARIA 1.2) or 'aria-owns' (ARIA 1.0) appropriately references a valid popup 'id' value",
+            "messageArgs": [],
+            "apiArgs": [],
+            "category": "Accessibility"
+          },
+          {
+            "ruleId": "combobox_haspopup",
+            "value": [
+              "INFORMATION",
+              "FAIL"
+            ],
+            "path": {
+              "dom": "/html[1]/body[1]/main[1]/div[3]/input[1]",
+              "aria": "/document[1]/main[1]/combobox[3]"
+            },
+            "reasonId": "Fail_combobox_popup_role_mismatch",
+            "message": "The value of the combobox 'aria-haspopup' attribute \"tree\" does not match the 'role' value of the popup element \"listbox\"",
+            "messageArgs": [
+              "tree",
+              "listbox"
+            ],
+            "apiArgs": [],
+            "category": "Accessibility"
+          },
+          {
+            "ruleId": "combobox_haspopup",
+            "value": [
+              "INFORMATION",
+              "PASS"
+            ],
+            "path": {
+              "dom": "/html[1]/body[1]/main[1]/label[1]/input[1]",
+              "aria": "/document[1]/main[1]/combobox[4]"
+            },
+            "reasonId": "Pass",
+            "message": "The 'aria-controls' (ARIA 1.2) or 'aria-owns' (ARIA 1.0) appropriately references a valid popup 'id' value",
+            "messageArgs": [],
+            "apiArgs": [],
+            "category": "Accessibility"
+          }]
+        }
+    </script>
+</body>
+
+</html>

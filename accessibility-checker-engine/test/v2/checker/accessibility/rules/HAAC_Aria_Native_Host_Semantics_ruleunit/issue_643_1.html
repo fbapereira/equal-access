@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Sandbox</title>
+    <meta charset="UTF-8" />
+</head>
+
+<body>
+    <div dropdown="" keyboard-nav="" auto-close="click" class="combobox ng-scope dropdown open" ng-if-end="" style="">
+			
+        <a href="#" dropdown-toggle="" title="Choose language" role="button" aria-labelledby="languageLabel currentLanguage" aria-haspopup="true" class="dropdown-toggle" aria-expanded="true">
+            <span class="input ng-binding" aria-owns="languageList" id="currentLanguage">
+                Browser language (default)
+            </span>
+        </a>
+    
+        <ul id="languageList" class="dropdown-menu" role="listbox" aria-labelledby="languageLabel" aria-activedescendant="languageOptionnone" tabindex="-1">
+            <li ng-repeat="(languageKey, language) in availableLanguages" id="languageOptionnone" value="none" ng-click="user.preferredLanguage = languageKey" role="option" tabindex="-1" aria-selected="true" class="ng-scope" style="">
+                <a href="#" class="ng-binding">Browser language (default)</a>
+            </li><li ng-repeat="(languageKey, language) in availableLanguages" id="languageOptionen" value="en" ng-click="user.preferredLanguage = languageKey" role="option" tabindex="-1" aria-selected="false" class="ng-scope ng-enter-prepare">
+                <a href="#" class="ng-binding">English</a>
+            </li>
+        </ul>
+    </div>
+    
+</body>
+
+</html>
