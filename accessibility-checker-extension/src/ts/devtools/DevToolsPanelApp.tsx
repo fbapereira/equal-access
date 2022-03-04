@@ -136,6 +136,7 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
 
     constructor(props: any) {
         super(props);
+        console.log("Hello Constructor");
         this.leftPanelRef = React.createRef();
         this.subPanelRef = React.createRef();
         this.leftPanelItemSelected = React.createRef();
@@ -147,6 +148,9 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
         // Only listen to element events on the subpanel
         if (this.props.layout === "sub") {
             chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
+                console.log("on selection change url = ", this.state.tabURL);
+                
+                
                 chrome.devtools.inspectedWindow.eval(`((node) => {
                     let countNode = (node) => { 
                         let count = 0;
@@ -194,6 +198,7 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
                         console.error(err);
                     }
                 })($0)`, (result: string) => {
+                    console.log("selected element result = "+result);
                     // This filter occurred because we selected an element in the elements tab
                     this.onFilter(result);
                     if (this.ignoreNext) {
@@ -205,12 +210,12 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
     }
 
     async componentDidMount() {
-        // console.log("componentDidMount");
+        console.log("componentDidMount readOptionsData");
         this.readOptionsData();
     }
-
+    
     readOptionsData() {
-        // console.log("readOptionsData");
+        console.log("**** Function: readOptionsData START ****");
         var self = this;
         chrome.storage.local.get("OPTIONS", async function (result: any) {
             //pick default archive id from env
@@ -248,6 +253,35 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
             // and get url using chrome.tabs.get via message "TAB_INFO"
             let thisTabId = chrome.devtools.inspectedWindow.tabId;
             let tab = await PanelMessaging.sendToBackground("TAB_INFO", { tabId: thisTabId });
+
+            // Determine if we have a valid URL, if not don't refresh options
+            console.log("Check URLS Start");
+            console.log("window.location.href = "+window.location.href);
+            chrome.devtools.inspectedWindow.eval("window.location.href", 
+                (result:string, isException) => {
+                    if (isException) {
+                        console.error(isException);
+                    }
+                    if (!result) {
+                        console.log('Could not get URL');
+                    }
+                    // get current URL after inspected Window script
+                    setTimeout(() => {
+                        console.log("url result = ",result);
+                    }, 0);
+                }
+            );
+            console.log("Check URLS DONE");
+            console.log("tab.id = "+tab.id);
+            console.log("tab.url = "+tab.url);
+            console.log("tab.title = "+tab.title);
+            console.log("")
+            if (tab.url.startsWith("chrome://") || tab.title === "Privacy error") { // check for internal chrome URL
+                self.setState({ tabURL: tab.url, tabId: tab.id, tabTitle: tab.title });
+                console.log("**** Function: readOptionsData DONE0 - URL is chrome internal URL so return ****");
+                return;
+            }
+
             if (tab.id && tab.url && tab.id && tab.title) {
                 let rulesets = await PanelMessaging.sendToBackground("DAP_Rulesets", { tabId: tab.id })
 
@@ -277,7 +311,9 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
                     tabId: tab.id, tabTitle: tab.title, error: null, archives, selectedArchive: archiveId, 
                     selectedPolicy: policyName });
             }
+            console.log("**** Function: readOptionsData DONE1 ****");
         });
+        
     }
 
     setError = (data: any) => {
@@ -308,28 +344,66 @@ export default class DevToolsPanelApp extends React.Component<IPanelProps, IPane
         return;
     }
 
+    
+
     async startScan() {
-        // console.log("startScan");
-        let tabId = this.state.tabId;
-        let tabURL = this.state.tabURL;
-        if (tabURL !== this.state.prevTabURL) {
-            this.setState({firstScan: true});
-        }
-        this.state.prevTabURL = tabURL;
+        console.log("**** Function: startScan START ****");
+        // Determine if we have a valid URL, if not don't do scan
+        console.log("this.state.tabURL = "+this.state.tabURL);
+        console.log("this.state.prevTabURL = "+this.state.prevTabURL);
+        console.log("this.state.tabURL.startsWith('chrome://') || this.state.tabTitle === 'Privacy error' = "+this.state.tabURL.startsWith("chrome://") || this.state.tabTitle === "Privacy error");
+        console.log("window.location.href = "+window.location.href);
+        // Determine if we have a valid URL, if not don't refresh options
+        chrome.devtools.inspectedWindow.eval("document.location.href", 
+            (result:string, isException) => {
+                if (isException) {
+                    console.error(isException);
+                }
+                if (!result) {
+                    console.log('Could not get URL');
+                }
+                // get current URL after inspected Window script
+                setTimeout(() => {
+                    console.log("url result = ",result);
+                }, 0);
+            }
+        );
 
-        this.readOptionsData();
-
-        if (tabId === -1) {
-            // componentDidMount is not done initializing yet
-            setTimeout(this.startScan.bind(this), 100);
+        if (this.state.tabURL.startsWith("chrome://") || this.state.tabTitle === "Privacy error") { // check for internal chrome URL
+            console.log("**** GOT INTERNAL CHROME URL");
+            let tabURL = this.state.tabURL;
+            this.state.prevTabURL = tabURL;
+            console.log("startScan: readOptionsData");
+            this.readOptionsData();
+            if (tabURL !== this.state.prevTabURL) {
+                this.setState({firstScan: true});
+            }
+            console.log("**** Function: startScan DONE - internal Chrome URL ****");
+            return;
         } else {
-            this.setState({ numScanning: this.state.numScanning + 1, scanning: true });
-            try {
-                await PanelMessaging.sendToBackground("DAP_SCAN", { tabId: tabId, tabURL:  tabURL, origin: this.props.layout})
-            } catch (err) {
-                console.error(err);
+            let tabId = this.state.tabId;
+            let tabURL = this.state.tabURL;
+            if (tabURL !== this.state.prevTabURL) {
+                this.setState({firstScan: true});
+            }
+            this.state.prevTabURL = tabURL;
+            console.log("startScan: readOptionsData");
+            this.readOptionsData();
+            if (tabId === -1) {
+                console.log("componentDidMount is not done initializing yet");
+                setTimeout(this.startScan.bind(this), 100);
+            } else {
+                this.setState({ numScanning: this.state.numScanning + 1, scanning: true });
+                try {
+                    await PanelMessaging.sendToBackground("DAP_SCAN", { tabId: tabId, tabURL:  tabURL, origin: this.props.layout})
+                } catch (err) {
+                    console.error(err);
+                }
             }
         }
+        
+
+        
     }
 
     collapseAll() {

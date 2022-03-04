@@ -179,12 +179,14 @@ export default class Header extends React.Component<IHeaderProps, IHeaderState> 
 
 
     render() {
+        console.log("Start Header Render");
         let counts = this.props.counts;
         let noScan = counts ? true : false;
+        console.log("noScan = "+noScan);
         if (this.props.scanning == true) {
             noScan = true;
         }
-
+        console.log("noScan = "+noScan);
         // let isLatestArchive = this.isLatestArchive(this.props.selectedArchive, this.props.archives);
 
         if (!counts) {
@@ -206,6 +208,8 @@ export default class Header extends React.Component<IHeaderProps, IHeaderState> 
         let bDiff = counts.total["Violation"] !== counts.filtered["Violation"]
             || counts.total["Needs review"] !== counts.filtered["Needs review"]
             || counts.total["Recommendation"] !== counts.filtered["Recommendation"];
+        
+        console.log("Header Render 1");
 
         let focusText = this.props.focusedViewText;
 
@@ -238,7 +242,8 @@ export default class Header extends React.Component<IHeaderProps, IHeaderState> 
                 </div>
             </div>
             }
-            {/* Content for Checker Tab */}
+            {/* Content for Checker Tab */
+                console.log("Header Content for Checker Tab")}
             {this.props.layout === "sub" ?
                 <React.Fragment>
                 <div className="bx--row" style={{ marginTop: '10px' }}>

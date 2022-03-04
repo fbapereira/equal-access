@@ -15,7 +15,8 @@
 	"permissions": [
         "<all_urls>",
         "tabs",
-        "storage"
+        "storage",
+		"devtools"
 	],
 	"browser_action": {
 		"default_title": "IBM Equal Access Accessibility Checker",
